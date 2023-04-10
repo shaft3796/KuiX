@@ -1,7 +1,10 @@
-<img src="https://github.com/Shaft-3796/KuiX/blob/main/assets/Kuix-Logo-Light-WhiteBkg.png">
+<img src="https://github.com/Shaft-3796/KuiX/blob/main/assets/main_dark.svg#gh-light-mode-only" height="400px">
+<img src="https://github.com/Shaft-3796/KuiX/blob/main/assets/main_white.svg#gh-dark-mode-only" height="400px">
 
 # KuiX
 A powerful, modular, easy to use and scalable python algorithmic trading engine.
+
+/!\ Highly under development, usable yet but use it at your own risk. /!\
 
 ## Abstract
 
@@ -21,19 +24,16 @@ KuiX is currently under high development, do not hesitate to follow the project 
 
 ```
 - Build a functional and usable engine with handling of components.
--> Release ALPHA-0.0 [Achieved 2023-24-03]
+-> Release ALPHA-1.1 [Achieved 2023-01-05]
 
 - Typo correction, code cleaning/refacto and documentation.
 - Add built-in workers components. (CCXT, persistence, ...)
 - Add built-in core components. (Logging, monitoring with web ui and discord, ...)
 - Add examples of strategies.
-- Add Unit tests.
--> Release BETA-0.0 [Expected august 2023]
 ```
 
 ## Features
 
-All features listed here are a set of things that I would like to implement for KuiX.
 
 #### Ease of use
 - Pre built strategy classes to inherit
