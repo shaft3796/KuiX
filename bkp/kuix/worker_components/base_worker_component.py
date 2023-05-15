@@ -1,9 +1,8 @@
 """
 Implementation the base class for all worker components
 """
-from kuix.core.exception import GenericException
-from kuix.core.logger import logger
-from kuix.core.stateful import Stateful
+from bkp.kuix.core.exception import GenericException
+from bkp.kuix.core.stateful import Stateful
 
 # --- MESSAGES ---
 ROUTE = "WORKER_COMPONENT_<{}>"
