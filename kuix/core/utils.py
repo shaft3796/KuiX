@@ -1,13 +1,12 @@
 """
 Utilities for kuix
 """
-from kuix.core.exceptions import GenericException
+from kuix.core.exceptions import KuixException, Contextualize
 
 import threading
 
 
 # -- Lockable object --
-# - Class -
 class Lockable:
     """
     Implements a decorator to lock methods for multithreading
@@ -39,7 +38,19 @@ class Lockable:
 
 # -- Stateful object --
 # - Exceptions -
-class NotBuiltError(GenericException):
+class StateError(KuixException):
+    """
+    Base class for all state exceptions.
+    """
+
+    def __init__(self, msg):
+        super.__init__(msg)
+
+    def contextualize_method(self, method):
+        self.contextualize(f"Method: {method.__name__}")
+
+
+class NotBuiltError(StateError):
     """
     Exception raised when a stateful object is not built
     """
@@ -51,7 +62,7 @@ class NotBuiltError(GenericException):
         super().__init__(f"{prefix}: The object is not built, you must build it first.")
 
 
-class AlreadyBuiltError(GenericException):
+class AlreadyBuiltError(StateError):
     """
     Exception raised when a stateful object is already built
     """
@@ -63,7 +74,7 @@ class AlreadyBuiltError(GenericException):
         super().__init__(f"{prefix}: The object is already built, you must build it only once.")
 
 
-class NotRunningError(GenericException):
+class NotRunningError(StateError):
     """
     Exception raised when a stateful object is not running
     """
@@ -75,7 +86,7 @@ class NotRunningError(GenericException):
         super().__init__(f"{prefix}: The object is not running, you must start it first.")
 
 
-class AlreadyRunningError(GenericException):
+class AlreadyRunningError(StateError):
     """
     Exception raised when a stateful object is already running
     """
@@ -87,7 +98,7 @@ class AlreadyRunningError(GenericException):
         super().__init__(f"{prefix}: The object is already running, you must stop it first.")
 
 
-class NotDestroyedError(GenericException):
+class NotDestroyedError(StateError):
     """
     Exception raised when a stateful object is not destroyed
     """
@@ -99,7 +110,7 @@ class NotDestroyedError(GenericException):
         super().__init__(f"{prefix}: The object is not destroyed, you must destroy it first.")
 
 
-class AlreadyDestroyedError(GenericException):
+class AlreadyDestroyedError(StateError):
     """
     Exception raised when a stateful object is already destroyed
     """
@@ -182,7 +193,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if not self.is_built():
-                raise NotBuiltError(self.prefix).add_context("Method: " + func.__name__)
+                raise NotBuiltError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
@@ -195,7 +206,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if self.is_built():
-                raise AlreadyBuiltError(self.prefix).add_context("Method: " + func.__name__)
+                raise AlreadyBuiltError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
@@ -208,7 +219,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if not self.is_running():
-                raise NotRunningError(self.prefix).add_context("Method: " + func.__name__)
+                raise NotRunningError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
@@ -221,7 +232,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if self.is_running():
-                raise AlreadyRunningError(self.prefix).add_context("Method: " + func.__name__)
+                raise AlreadyRunningError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
@@ -234,7 +245,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if not self.is_destroyed():
-                raise NotDestroyedError(self.prefix).add_context("Method: " + func.__name__)
+                raise NotDestroyedError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
@@ -247,7 +258,7 @@ class Stateful:
 
         def wrapper(self, *args, **kwargs):
             if self.is_destroyed():
-                raise AlreadyDestroyedError(self.prefix).add_context("Method: " + func.__name__)
+                raise AlreadyDestroyedError(self.prefix).contextualize_method(func)
             return func(self, *args, **kwargs)
 
         return wrapper
