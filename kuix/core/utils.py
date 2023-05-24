@@ -324,5 +324,4 @@ class Stateful:
 
         return wrapper
 
-# TODO: implements Logger
 # TODO: Unittest for logger, exceptions, utils

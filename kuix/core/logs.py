@@ -21,20 +21,19 @@ ITALIC = '\x1B[3m'
 class KuixIO:
 
     def __init__(self):
-        self.std = sys.stdout
         self.kuix = open("/tmp/kuix.tmp", "w")
 
     def write(self, data):
-        self.std.write(data)
+        sys.__stdout__.write(data)
         self.kuix.write(data)
 
     def flush(self):
-        self.std.flush()
+        sys.__stdout__.flush()
         self.kuix.flush()
 
     def close(self):
+        sys.__stdout__.close()
         self.kuix.close()
-        self.std.close()
 
 
 # -- Log --
@@ -84,9 +83,6 @@ class Logger(Lockable):
         """
         super().__init__()
 
-        # --- I/O ---
-        self.io = KuixIO()
-
         # --- Logs ---
         self.is_verbose = False
         self.is_debug = False
@@ -94,6 +90,7 @@ class Logger(Lockable):
         # -- Persistence --
         self.root_path = path if path is None else (path if path.endswith("/") else path + "/")
         self.files = {}
+
         if self.root_path is not None:
             os.makedirs(self.root_path, exist_ok=True)
             for level in Levels.__dict__.keys():
@@ -134,7 +131,10 @@ class Logger(Lockable):
             # - Files -
             if self.root_path is not None:
                 try:
-                    json.dump(log.to_dict(), self.files[level], indent=4)
+                    self.files[level[0]].write(json.dumps(log.to_dict(), indent=0) + "\n")
+
+                    # Flush
+                    self.files[level[0]].flush()
                 except Exception as e:
                     print(f"Error while writing to log file: {e}")
         except Exception as e:
@@ -161,13 +161,15 @@ class Logger(Lockable):
 
     # --- Destructor ---
     def __del__(self):
-        self.io.close()
         for file in self.files.values():
             file.close()
 
 
 def _exception_hook(exc_type, value, traceback):
-    logger.critical(value)
+    try:
+        logger.critical(value)
+    except Exception as e:
+        print(f"Error while logging: {e}")
 
 
 def kuix_override():
