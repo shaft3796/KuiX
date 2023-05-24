@@ -28,8 +28,11 @@ class KuixException(Exception):
         :return: self
         """
         if not isinstance(_e, KuixException):
-            _e = KuixException(str(_e))
-        self.exceptions.append(_e)
+            e = KuixException(str(_e))
+            e.__traceback__ = _e.__traceback__
+        else:
+            e = _e
+        self.exceptions.append(e)
         return self
 
     def contextualize(self, context: str):
