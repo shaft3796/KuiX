@@ -20,8 +20,8 @@ ITALIC = '\x1B[3m'
 # -- Custom IO --
 class KuixIO:
 
-    def __init__(self):
-        self.kuix = open("/tmp/kuix.tmp", "w")
+    def __init__(self, path):
+        self.kuix = open(path, "w")
 
     def write(self, data):
         sys.__stdout__.write(data)
@@ -178,6 +178,6 @@ def kuix_override():
 
 
 # -- Global --
-kuix_io = KuixIO()
+kuix_io = KuixIO("/tmp/out.kuix")
 logger = Logger()
 kuix_override()
