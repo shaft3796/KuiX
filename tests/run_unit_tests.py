@@ -1,5 +1,7 @@
 # Exceptions
 from unit.core.unit_exceptions import UnitExceptions
+# Utils
+from unit.core.unit_utils import UnitUtils
 # Logs
 from unit.core.unit_logs import UnitLogs
 
@@ -14,6 +16,8 @@ def run_unit_tests():
     suite = unittest.TestSuite()
     # Exceptions
     suite.addTest(UnitExceptions())
+    # Utils
+    suite.addTest(UnitUtils())
     # Logs
     suite.addTest(UnitLogs())
 
