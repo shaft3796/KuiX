@@ -44,10 +44,11 @@ class StateError(KuixException):
     """
 
     def __init__(self, msg):
-        super.__init__(msg)
+        super().__init__(msg)
 
     def contextualize_method(self, method):
         self.contextualize(f"Method: {method.__name__}")
+        return self
 
 
 class NotBuiltError(StateError):
@@ -323,5 +324,3 @@ class Stateful:
             return ret
 
         return wrapper
-
-# TODO: Unittest for logger, exceptions, utils
