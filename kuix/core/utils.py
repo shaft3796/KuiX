@@ -1,6 +1,8 @@
 """
 Utilities for kuix
 """
+import inspect
+
 from kuix.core.exceptions import KuixException, Contextualize
 
 import threading
@@ -324,3 +326,66 @@ class Stateful:
             return ret
 
         return wrapper
+
+
+# -- Events --
+# - Exceptions -
+class EventSubscriptionError(KuixException):
+    pass
+
+
+class NotCallableCallbackError(EventSubscriptionError):
+    """
+    Exception raised when a callback is not callable
+    """
+
+    def __init__(self, prefix: str, event: str):
+        """
+        Initializes the exception
+        :param prefix: The prefix of the object
+        :param event: The event name
+        """
+        super().__init__(f"{prefix}: Error while subscribing to the event '{event}', the callback is not callable.")
+
+
+class CallbackBadSignatureError(EventSubscriptionError):
+    """
+    Exception raised when a callback has a bad signature
+    """
+
+    def __init__(self, prefix: str, event: str, required_args: list, callback):
+        """
+        Initializes the exception
+        :param prefix: The prefix of the object
+        :param event: The event name
+        :param required_args: The required arguments
+        :param callback: The callback
+        """
+        super().__init__(f"{prefix}: Error while subscribing to the event '{event}', the callback has a bad "
+                         f"signature.\nExpected: {required_args}\nActual: {inspect.signature(callback)}")
+
+
+class EventEmitError(KuixException):
+    """
+    Exception raised when an error occurs while emitting an event
+    """
+
+    def __init__(self, prefix: str, event: str, args, kwargs):
+        """
+        Initializes the exception
+        :param prefix: The prefix of the object
+        :param event: The event name
+        :param args: The arguments
+        :param kwargs: The keyword arguments
+        """
+        super().__init__(f"{prefix}: Error while emitting the event '{event}' with args '{args}' and kwargs "
+                         f"'{kwargs}'.")
+
+
+# - Class -
+class Events:
+    TEST_EVENT = "test_event", ["test_arg1", "test_arg2"]
+
+    @classmethod
+    def add(cls, event_name, callback_requirement):
+        setattr(cls, event_name, (event_name, callback_requirement))

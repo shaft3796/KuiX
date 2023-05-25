@@ -6,7 +6,8 @@ from unittest.mock import patch
 from colorama import Fore, Style
 
 from kuix.core.utils import Lockable, Stateful, AlreadyBuiltError, NotBuiltError, AlreadyRunningError, NotRunningError, \
-    NotDestroyedError, AlreadyDestroyedError
+    NotDestroyedError, AlreadyDestroyedError, Events, NotCallableCallbackError, CallbackBadSignatureError, \
+    EventEmitError
 
 
 class UnitUtils(unittest.TestCase):
@@ -142,10 +143,22 @@ class UnitUtils(unittest.TestCase):
         test.destroy()
         self.assertTrue(test.is_destroyed())
 
+    def unit_events(self):
+        print(Fore.MAGENTA + "Utils 3/ Events" + Style.RESET_ALL)
+        # 1/ Check add method
+        Events.add("FOO", ["BAR", "BAZ"])
+        self.assertEqual(Events.FOO, ("FOO", ["BAR", "BAZ"]))
+
+        # 2/ Check no error when instancing exceptions
+        NotCallableCallbackError(None, None)
+        CallbackBadSignatureError(None, None, None, lambda x: x)
+        EventEmitError(None, None, None, None)
+
     def runTest(self):
         print(Fore.CYAN + "\033[1m" + f"--- RUNNING Utils UNIT TEST ---" + Style.RESET_ALL)
         self.unit_lockable()
         self.unit_stateful()
+        self.unit_events()
         print(Fore.CYAN + "\033[1m" + f"--- PASSED Utils UNIT TEST ---\n" + Style.RESET_ALL)
         time.sleep(0.1)
 
