@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import shutil
@@ -9,7 +10,7 @@ from kuix.core.logs import logger, kuix_io, KuixIO, Log, Levels, Logger
 from unittest.mock import patch, Mock
 
 
-class UnitLogger(unittest.TestCase):
+class UnitLogs(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -26,11 +27,11 @@ class UnitLogger(unittest.TestCase):
             # 2/ Flush
             kuix_io.flush()
             mock_stdout.flush.assert_called_once()
-            with open("/tmp/kuix.tmp", "r") as f:
-                self.assertEqual("Test", f.read())
+            with open("/tmp/out.kuix", "r") as f:
+                self.assertIn("Test", f.read())
 
             # 3/ Close
-            kio = KuixIO()
+            kio = KuixIO("/tmp/out.kuix")
             kio.kuix.close()
             kio.kuix = Mock()
             kio.close()
